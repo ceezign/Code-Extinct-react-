@@ -25,7 +25,7 @@ header > h1 {
 
 header > p {
   font-size: 0.875rem;
-  max-width: 350px;
+  max-width: 450px;
   color: #8E8E8E;
 }
 
@@ -52,11 +52,62 @@ section.language-chips {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  max-width: 350px;
+  max-width: 450px;
   gap: 5px;
+  margin-bottom: 36px;
 }
 
 div.chip {
   border-radius: 3px;
   padding: 4.5px;
+}
+
+.word {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-bottom: 20px;
+  
+}
+
+section.word > span {
+  height: 40px;
+  width: 40px;
+  background-color: #323232;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.125rem;
+  border-bottom: 1px solid #F9F4DA;
+
+}
+
+section.keyboard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 450px;
+  gap: 8px;
+  margin-bottom: 36px;
+}
+
+section.keyboard > button {
+  height: 35px;
+  width: 35px;
+  background-color: #FCBA29;
+  border: 1px solid #D7D7D7;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+button.new-game {
+  background-color: #11B5E5;
+  border: 1px solid #D7D7D7;
+  width: 225px;
+  height: 40px;
+  border-radius: 4px;
+  padding: 6px 12px;
+  display: block;
+  margin-inline: auto;
+  cursor: pointer;
 }
