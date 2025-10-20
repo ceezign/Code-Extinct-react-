@@ -40,7 +40,7 @@ export const languages = [
         color: "#F9F4DA",
     },
     {
-        name: "Assembly",
+        name: "PHP(Laravel)",
         backgroundColor: "#2D519F",
         color: "#F9F4DA",
     },

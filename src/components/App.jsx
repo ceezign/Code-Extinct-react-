@@ -12,6 +12,13 @@ export default function App(){
   const wrongGuessCount = 
     guessedLetters.filter(letter => !currentWord.includes(letter)).length
   console.log(wrongGuessCount)
+
+  const isGameWon = 
+    currentWord.split("").every(letter => guessedLetters.includes(letter))
+
+  const isGameLost = wrongGuessCount >= languages.length - 1
+
+  const isGameOver = isGameWon || isGameLost
   
 
 
@@ -28,15 +35,17 @@ export default function App(){
 
 
 
-  const languageElements = languages.map((lang) => (
-  <div 
-  className="chip" 
+  const languageElements = languages.map((lang, index) => {
+    const isLanguageLost = index < wrongGuessCount
+    const className = clsx("chip", isLanguageLost && "lost")
+  return (<div 
+  className={className}
   style={{backgroundColor: lang.backgroundColor, color: lang.color}}
   key={lang.name}
   >
     {lang.name}
   </div>
-  ))
+  )})
 
   const letterElements =  currentWord.split("").map((letter, index) => (
     <span key={index}>{guessedLetters.includes(letter)  ? 
@@ -64,7 +73,10 @@ export default function App(){
     )
   })
 
-
+  const gameStatusClass = clsx("game-status", {
+    won: isGameWon,
+    lost: isGameLost
+  })
 
 
   return(
@@ -74,10 +86,24 @@ export default function App(){
         <p>Guess the word within 8 attempts to keep the 
           programming world safe from Assembly!</p>
       </header>
-      <section className="game-status"> 
-          <h2>You Win!</h2>
-          <p>restart the game</p>
+      <section className={gameStatusClass}> 
+          { isGameOver ? (
+            isGameWon ? (
+              <>
+                <h2>You Win!</h2>
+                <p>Well Done! </p>
+              </> 
+            ) : (
+              <>
+                <h2>Game over!</h2>
+                <p>you lose! Better start learning PHP</p>
+              </>
+            )
+            ) : (null)
+          }
       </section>
+
+
 
 
       <section className="language-chips">
@@ -92,7 +118,29 @@ export default function App(){
         {keyboardAlphabets}
       </section>
 
-      <button className="new-game">New Game</button>
+      {isGameOver ? <button className="new-game">New Game</button> : null}
     </main>
   )
 }
+
+// function renderGameStatus() {
+//   if (!isGameOver) {
+//     return null
+//   }
+
+//   if (isGameWon) {
+//     return (
+//       <>
+//         <h2>You Win!</h2>
+//         <p>Well Done! </p>
+//       </>
+//     )
+//   } else {
+//     return (
+//       <>
+//         <h2>Game over!</h2>
+//         <p>you lose! Better start learning PHP</p>
+//       </>
+//     )
+//   }
+// }
