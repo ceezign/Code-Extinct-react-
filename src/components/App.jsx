@@ -1,17 +1,19 @@
 import { useState } from "react"
 import { languages } from "./languages"
 import clsx from "clsx";
+import { getFarewellText } from "./utils";
+import { getRandomWord } from "./utils";
 
 export default function App(){
 
   // state values
-  const [currentWord, setCurrentWord] = useState("react");
+  const [currentWord, setCurrentWord] = useState(() => getRandomWord());
   const [guessedLetters, setGuessedLetters] = useState([])
 
   // derived values
+  const numGuessesLeft = languages.length - 1
   const wrongGuessCount = 
     guessedLetters.filter(letter => !currentWord.includes(letter)).length
-  console.log(wrongGuessCount)
 
   const isGameWon = 
     currentWord.split("").every(letter => guessedLetters.includes(letter))
@@ -19,7 +21,9 @@ export default function App(){
   const isGameLost = wrongGuessCount >= languages.length - 1
 
   const isGameOver = isGameWon || isGameLost
-  
+
+  const lastGuessLetter = guessedLetters[guessedLetters.length - 1]
+  const isLastGuessIncorrect = lastGuessLetter && !currentWord.includes(lastGuessLetter)
 
 
   // static values
@@ -68,6 +72,9 @@ export default function App(){
       <button 
         className={className}
         key={letter} 
+        disabled={isGameOver}
+        aria-disabled={guessedLetters.includes(letter)}
+        aria-label={`Letter ${letter}`}
         onClick={() =>addGuessedLetter(letter)}
       >{letter.toUpperCase()}</button>
     )
@@ -75,8 +82,44 @@ export default function App(){
 
   const gameStatusClass = clsx("game-status", {
     won: isGameWon,
-    lost: isGameLost
+    lost: isGameLost,
+    farewell: !isGameOver && isLastGuessIncorrect
   })
+
+
+  function renderGameStatus() {
+  if (!isGameOver && isLastGuessIncorrect) {
+    return (
+      <>
+      <p className="farewell-message">
+        {getFarewellText(languages[wrongGuessCount - 1].name)}
+      </p>
+      </>
+    )
+  }
+
+
+  if (isGameWon) {
+    return (
+      <>
+        <h2>You Win!</h2>
+        <p>Well Done! </p>
+      </>
+    )
+  } 
+  if (isGameLost) {
+    return (
+      <>
+        <h2>Game over!</h2>
+        <p>you lose! Better start learning PHP</p>
+      </>
+    )
+  }
+
+  return null
+}
+
+
 
 
   return(
@@ -86,24 +129,9 @@ export default function App(){
         <p>Guess the word within 8 attempts to keep the 
           programming world safe from Assembly!</p>
       </header>
-      <section className={gameStatusClass}> 
-          { isGameOver ? (
-            isGameWon ? (
-              <>
-                <h2>You Win!</h2>
-                <p>Well Done! </p>
-              </> 
-            ) : (
-              <>
-                <h2>Game over!</h2>
-                <p>you lose! Better start learning PHP</p>
-              </>
-            )
-            ) : (null)
-          }
+      <section aria-live="polite" role="status" className={gameStatusClass}> 
+          { renderGameStatus() }
       </section>
-
-
 
 
       <section className="language-chips">
@@ -114,9 +142,24 @@ export default function App(){
         {letterElements}
       </section>
 
+      {/* visually hidden aria-live region for status update */}
+      <section className="sr-only" aria-live="polite" role="status">
+        <p>
+          {currentWord.includes(lastGuessLetter) ?
+            `Correct! The letter ${lastGuessLetter} is in the word` :
+            `Sorry, the letter ${lastGuessLetter} is not in the word`
+          }
+          You have {numGuessesLeft} attempts left 
+        </p>
+        <p>
+          currentWord: {currentWord.split("").map(letter => 
+          guessedLetters.includes(letter) ? letter + "." : "blank.").join(" ")}
+        </p>
+      </section>
+
       <section className="keyboard">
         {keyboardAlphabets}
-      </section>
+      </section> 
 
       {isGameOver ? <button className="new-game">New Game</button> : null}
     </main>
@@ -144,3 +187,18 @@ export default function App(){
 //     )
 //   }
 // }
+
+
+// isGameOver ? (
+//             isGameWon ? (
+//               <>
+//                 <h2>You Win!</h2>
+//                 <p>Well Done! </p>
+//               </> 
+//             ) : (
+//               <>
+//                 <h2>Game over!</h2>
+//                 <p>you lose! Better start learning PHP</p>
+//               </>
+//             )
+//             ) : (null)
