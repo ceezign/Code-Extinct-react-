@@ -3,6 +3,7 @@ import { languages } from "./languages"
 import clsx from "clsx";
 import { getFarewellText } from "./utils";
 import { getRandomWord } from "./utils";
+import ReactConfetti from "react-confetti";
 
 export default function App(){
 
@@ -29,6 +30,11 @@ export default function App(){
   // static values
   const alphabet = "abcdefghijklmnopqrstuvwxyz"
 
+  function startNewGame(){
+    setCurrentWord(getRandomWord())
+    setGuessedLetters([]);
+  }
+
   function addGuessedLetter(letter){
     setGuessedLetters(prevLetters => 
       prevLetters.includes(letter) ? 
@@ -51,10 +57,18 @@ export default function App(){
   </div>
   )})
 
-  const letterElements =  currentWord.split("").map((letter, index) => (
-    <span key={index}>{guessedLetters.includes(letter)  ? 
-                      letter.toUpperCase() : " " }</span>
-  ))
+
+  const letterElements =  currentWord.split("").map((letter, index) => {
+    const shouldReavelLetter = isGameLost || guessedLetters.includes(letter)
+    const letterClassName = clsx(
+      isGameLost && !guessedLetters.includes(letter) && "missed-letters"
+    )
+    return ( 
+      <span key={index} className={letterClassName}>
+        {shouldReavelLetter ? letter.toUpperCase() : "" }
+      </span>
+    )
+  });
 
 
 
@@ -80,6 +94,8 @@ export default function App(){
     )
   })
 
+
+  
   const gameStatusClass = clsx("game-status", {
     won: isGameWon,
     lost: isGameLost,
@@ -120,14 +136,13 @@ export default function App(){
 }
 
 
-
-
   return(
     <main>
+      {isGameWon && <ReactConfetti recycle={false} numberOfPieces={1000} />}
       <header>
         <h1>Code Extinct</h1>
         <p>Guess the word within 8 attempts to keep the 
-          programming world safe from Assembly!</p>
+          programming world safe from PHP!</p>
       </header>
       <section aria-live="polite" role="status" className={gameStatusClass}> 
           { renderGameStatus() }
@@ -161,7 +176,7 @@ export default function App(){
         {keyboardAlphabets}
       </section> 
 
-      {isGameOver ? <button className="new-game">New Game</button> : null}
+      {isGameOver ? <button className="new-game" onClick={startNewGame}>New Game</button> : null}
     </main>
   )
 }
